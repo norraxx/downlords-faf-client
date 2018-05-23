@@ -10,6 +10,7 @@ import com.faforever.client.map.MapService;
 import com.faforever.client.mod.FeaturedMod;
 import com.faforever.client.mod.ModService;
 import com.faforever.client.notification.Action;
+import com.faforever.client.notification.Action.Type;
 import com.faforever.client.notification.DismissAction;
 import com.faforever.client.notification.ImmediateNotification;
 import com.faforever.client.notification.NotificationService;
@@ -50,6 +51,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -173,7 +175,18 @@ public class ReplayService {
               FeaturedMod featuredMod = modService.getFeaturedMod(replayInfo.getFeaturedMod()).getNow(FeaturedMod.UNKNOWN);
 
               mapService.findByMapFolderName(replayInfo.getMapname())
-                  .thenAccept(mapBean -> replayInfos.add(new Replay(replayInfo, replayFile, featuredMod, mapBean.orElse(null))));
+                  .thenAccept(mapBean -> {
+                    if (!mapBean.isPresent()) {
+                      notificationService.addNotification(new ImmediateNotification(
+                          i18n.get("errorTitle"),
+                          i18n.get("mapNotFound", replayInfo.getMapname(), replayInfo.getUid()),
+                          WARN,
+                          Collections.singletonList(new Action(i18n.get("replay.local.markAsCorrupted"), Type.OK_DONE, event -> moveCorruptedReplayFile(replayFile)))
+                      ));
+                      return;
+                    }
+                    replayInfos.add(new Replay(replayInfo, replayFile, featuredMod, mapBean.get()));
+                  });
             } catch (Exception e) {
               logger.warn("Could not read replay file '{}'", replayFile, e);
               moveCorruptedReplayFile(replayFile);

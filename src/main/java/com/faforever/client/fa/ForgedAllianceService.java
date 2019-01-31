@@ -1,5 +1,6 @@
 package com.faforever.client.fa;
 
+import com.faforever.client.fx.PlatformService;
 import com.faforever.client.game.Faction;
 import com.faforever.client.player.Player;
 import com.faforever.client.preferences.PreferencesService;
@@ -30,16 +31,20 @@ public class ForgedAllianceService {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final PreferencesService preferencesService;
+  private final PlatformService platformService;
 
   @Inject
-  public ForgedAllianceService(PreferencesService preferencesService) {
+  public ForgedAllianceService(PreferencesService preferencesService, PlatformService platformService) {
     this.preferencesService = preferencesService;
+    this.platformService = platformService;
   }
 
   
   public Process startGame(int uid, @Nullable Faction faction, @Nullable List<String> additionalArgs,
                            RatingMode ratingMode, int gpgPort, int localReplayPort, boolean rehost, Player currentPlayer) throws IOException {
     Path executable = getExecutable();
+
+    platformService.ensureBinaryIsExecutable(executable);
 
     float deviation;
     float mean;

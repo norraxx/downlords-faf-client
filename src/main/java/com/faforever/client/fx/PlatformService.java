@@ -1,18 +1,24 @@
 package com.faforever.client.fx;
 
+import com.google.common.collect.Sets;
 import com.sun.jna.Platform;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinUser;
 import com.sun.jna.platform.win32.WinUser.WINDOWPLACEMENT;
 import javafx.application.HostServices;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
 
 import static com.github.nocatch.NoCatch.noCatch;
 import static org.bridj.Platform.show;
 
+@Slf4j
 public class PlatformService {
 
   private final HostServices hostServices;
@@ -27,7 +33,7 @@ public class PlatformService {
   /**
    * Opens the specified URI in a new browser window or tab.
    */
-  
+
   public void showDocument(String url) {
     hostServices.showDocument(url);
   }
@@ -35,7 +41,7 @@ public class PlatformService {
   /**
    * Show a file in its parent directory, if possible selecting the file (not possible on all platforms).
    */
-  
+
   public void reveal(Path path) {
     noCatch(() -> show(path.toFile()));
   }
@@ -45,7 +51,7 @@ public class PlatformService {
    * Show a Window, restore it to it's state before minimizing (normal/restored or maximized) and move it to foreground
    * will only work on windows systems
    */
-  
+
   public void focusWindow(String windowTitle) {
     if (!isWindows) {
       return;
@@ -75,7 +81,7 @@ public class PlatformService {
     }
   }
 
-  
+
   public void startFlashingWindow(String windowTitle) {
     if (!isWindows) {
       return;
@@ -93,7 +99,7 @@ public class PlatformService {
     User32.INSTANCE.FlashWindowEx(flashwinfo);
   }
 
-  
+
   public void stopFlashingWindow(String windowTitle) {
     if (!isWindows) {
       return;
@@ -126,8 +132,20 @@ public class PlatformService {
     return new String(textBuffer).trim();
   }
 
-  
+
   public boolean isWindowFocused(String windowTitle) {
     return windowTitle.equals(getForegroundWindowTitle());
+  }
+
+  public void ensureBinaryIsExecutable(Path path) {
+    if (Platform.isLinux() || Platform.isMac()) {
+      try {
+        if (Files.getOwner(path).getName().equals(System.getProperty("user.name"))) {
+          Files.setPosixFilePermissions(path, Sets.immutableEnumSet(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_EXECUTE));
+        }
+      } catch (IOException e) {
+        log.error(String.format("Could not set binary %s as executable", path.toString()), e);
+      }
+    }
   }
 }

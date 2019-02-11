@@ -9,6 +9,7 @@ import com.faforever.client.fx.JavaFxUtil;
 import com.faforever.client.fx.PlatformService;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.main.event.ShowReplayEvent;
+import com.faforever.client.map.MapBean;
 import com.faforever.client.map.MapService;
 import com.faforever.client.mod.FeaturedMod;
 import com.faforever.client.mod.ModService;
@@ -62,6 +63,7 @@ import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -76,6 +78,7 @@ import java.util.function.Consumer;
 
 import static com.faforever.client.fa.RatingMode.NONE;
 import static com.faforever.client.game.KnownFeaturedMod.LADDER_1V1;
+import static com.faforever.client.game.KnownFeaturedMod.TUTORIALS;
 import static com.github.nocatch.NoCatch.noCatch;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
@@ -494,6 +497,11 @@ public class GameService {
 
   @VisibleForTesting
   void spawnTerminationListener(Process process) {
+    spawnTerminationListener(process, true);
+  }
+
+  @VisibleForTesting
+  void spawnTerminationListener(Process process, Boolean forOnlineGame) {
     executor.execute(() -> {
       try {
         rehostRequested = false;
@@ -502,9 +510,11 @@ public class GameService {
 
         synchronized (gameRunning) {
           gameRunning.set(false);
-          fafService.notifyGameEnded();
-          replayService.stopReplayServer();
-          iceAdapter.stop();
+          if (forOnlineGame) {
+            fafService.notifyGameEnded();
+            replayService.stopReplayServer();
+            iceAdapter.stop();
+          }
 
           if (rehostRequested) {
             rehost();
@@ -630,5 +640,23 @@ public class GameService {
     synchronized (uidToGameInfoBean) {
       uidToGameInfoBean.remove(gameInfoMessage.getUid());
     }
+  }
+
+  public void launchTutorial(MapBean mapVersion, String technicalMapName) {
+    modService.getFeaturedMod(TUTORIALS.getTechnicalName())
+        .thenCompose(featuredModBean -> updateGameIfNecessary(featuredModBean, null, emptyMap(), emptySet()))
+        .thenCompose(aVoid -> downloadMapIfNecessary(mapVersion.getFolderName()))
+        .thenAccept(aVoid -> {
+          List<String> args = Arrays.asList("/map", technicalMapName);
+          process = noCatch(() -> forgedAllianceService.startGameOffline(args));
+          setGameRunning(true);
+          spawnTerminationListener(process, false);
+        })
+        .exceptionally(throwable -> {
+          notificationService.addImmediateErrorNotification(throwable, "tutorial.launchFailed");
+          log.error("Launching tutorials failed", throwable);
+          return null;
+        });
+
   }
 }

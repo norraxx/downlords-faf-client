@@ -16,6 +16,7 @@ dependencies {
   implementation("org.springframework.integration:spring-integration-event")
   implementation("org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:${springSecurityOauth2AutoconfigureVersion}")
   implementation("org.springframework:spring-web")
+  implementation("com.github.brutus5000.deltaforge:deltaforge-client-starter:${deltaforgeVersion}")
 
   compileOnly("org.springframework.boot:spring-boot-configuration-processor")
 

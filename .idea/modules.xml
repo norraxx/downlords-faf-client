@@ -2,25 +2,25 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/commons/commons.iml" filepath="$PROJECT_DIR$/.idea/modules/commons/commons.iml" group="downlords-faf-client/commons" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/commons/commons_main.iml" filepath="$PROJECT_DIR$/.idea/modules/commons/commons_main.iml" group="downlords-faf-client/commons" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/commons/commons_test.iml" filepath="$PROJECT_DIR$/.idea/modules/commons/commons_test.iml" group="downlords-faf-client/commons" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client.iml" group="downlords-faf-client" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/commons/commons.iml" filepath="$PROJECT_DIR$/.idea/modules/commons/commons.iml" group="commons" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/commons/commons_main.iml" filepath="$PROJECT_DIR$/.idea/modules/commons/commons_main.iml" group="commons" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/commons/commons_test.iml" filepath="$PROJECT_DIR$/.idea/modules/commons/commons_test.iml" group="commons" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client_main.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client_main.iml" group="downlords-faf-client" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/downlords-faf-client_test.iml" filepath="$PROJECT_DIR$/.idea/modules/downlords-faf-client_test.iml" group="downlords-faf-client" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/service.iml" filepath="$PROJECT_DIR$/.idea/modules/service/service.iml" group="service" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/service.iml" filepath="$PROJECT_DIR$/.idea/modules/service.iml" group="downlords-faf-client/service" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/service.iml" filepath="$PROJECT_DIR$/.idea/modules/service/service.iml" group="downlords-faf-client/service" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/service_main.iml" filepath="$PROJECT_DIR$/.idea/modules/service/service_main.iml" group="downlords-faf-client/service" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/service_test.iml" filepath="$PROJECT_DIR$/.idea/modules/service/service_test.iml" group="downlords-faf-client/service" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/test-commons/test-commons.iml" filepath="$PROJECT_DIR$/.idea/modules/test-commons/test-commons.iml" group="downlords-faf-client/test-commons" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/test-commons/test-commons_main.iml" filepath="$PROJECT_DIR$/.idea/modules/test-commons/test-commons_main.iml" group="downlords-faf-client/test-commons" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/test-commons/test-commons_test.iml" filepath="$PROJECT_DIR$/.idea/modules/test-commons/test-commons_test.iml" group="downlords-faf-client/test-commons" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui/ui.iml" filepath="$PROJECT_DIR$/.idea/modules/ui/ui.iml" group="downlords-faf-client/ui" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui/ui_main.iml" filepath="$PROJECT_DIR$/.idea/modules/ui/ui_main.iml" group="downlords-faf-client/ui" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui/ui_test.iml" filepath="$PROJECT_DIR$/.idea/modules/ui/ui_test.iml" group="downlords-faf-client/ui" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webview-patch/webview-patch.iml" filepath="$PROJECT_DIR$/.idea/modules/webview-patch/webview-patch.iml" group="downlords-faf-client/webview-patch" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webview-patch/webview-patch_main.iml" filepath="$PROJECT_DIR$/.idea/modules/webview-patch/webview-patch_main.iml" group="downlords-faf-client/webview-patch" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webview-patch/webview-patch_test.iml" filepath="$PROJECT_DIR$/.idea/modules/webview-patch/webview-patch_test.iml" group="downlords-faf-client/webview-patch" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/service_main.iml" filepath="$PROJECT_DIR$/.idea/modules/service/service_main.iml" group="service" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/service_test.iml" filepath="$PROJECT_DIR$/.idea/modules/service/service_test.iml" group="service" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/test-commons/test-commons.iml" filepath="$PROJECT_DIR$/.idea/modules/test-commons/test-commons.iml" group="test-commons" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/test-commons/test-commons_main.iml" filepath="$PROJECT_DIR$/.idea/modules/test-commons/test-commons_main.iml" group="test-commons" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/test-commons/test-commons_test.iml" filepath="$PROJECT_DIR$/.idea/modules/test-commons/test-commons_test.iml" group="test-commons" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui/ui.iml" filepath="$PROJECT_DIR$/.idea/modules/ui/ui.iml" group="ui" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui/ui_main.iml" filepath="$PROJECT_DIR$/.idea/modules/ui/ui_main.iml" group="ui" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui/ui_test.iml" filepath="$PROJECT_DIR$/.idea/modules/ui/ui_test.iml" group="ui" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webview-patch/webview-patch.iml" filepath="$PROJECT_DIR$/.idea/modules/webview-patch/webview-patch.iml" group="webview-patch" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webview-patch/webview-patch_main.iml" filepath="$PROJECT_DIR$/.idea/modules/webview-patch/webview-patch_main.iml" group="webview-patch" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webview-patch/webview-patch_test.iml" filepath="$PROJECT_DIR$/.idea/modules/webview-patch/webview-patch_test.iml" group="webview-patch" />
     </modules>
   </component>
 </project>

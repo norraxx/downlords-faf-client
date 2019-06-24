@@ -12,6 +12,22 @@
                  tabMaxHeight="170.0"
                  tabMinHeight="170.0" VBox.vgrow="ALWAYS">
             <tabs>
+                <Tab fx:id="teamMatchmakingTab">
+                    <content>
+                        <fx:include source="team_matchmaking.fxml" fx:id="teamMatchmaking"/>
+                    </content>
+                    <graphic>
+                        <Group>
+                            <children>
+                                <VBox prefWidth="170.0" rotate="90.0">
+                                    <children>
+                                        <Label text="%play.teamMatchmaking" styleClass="tab-label"/>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </Group>
+                    </graphic>
+                </Tab>
                 <Tab fx:id="customGamesTab">
                     <content>
                         <fx:include source="custom_games.fxml" fx:id="customGames"/>

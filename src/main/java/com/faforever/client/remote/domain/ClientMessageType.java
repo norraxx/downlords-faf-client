@@ -17,7 +17,13 @@ public enum ClientMessageType {
   ICE_SERVERS("ice_servers"),
   RESTORE_GAME_SESSION("restore_game_session"),
   PING("ping"),
-  PONG("pong");
+  PONG("pong"),
+  INVITE_TO_PARTY("invite_to_party"),
+  ACCEPT_PARTY_INVITE("accept_party_invite"),
+  KICK_PLAYER_FROM_PARTY("kick_player_from_party"),
+  READY_PARTY("ready_party"),
+  UNREADY_PARTY("unready_party"),
+  LEAVE_PARTY("leave_party");
 
   private static Map<String, ClientMessageType> fromString;
 

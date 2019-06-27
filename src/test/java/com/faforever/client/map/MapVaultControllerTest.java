@@ -159,7 +159,7 @@ public class MapVaultControllerTest extends AbstractPlainJavaFxTest {
     instance.display(new ShowLadderMapsEvent());
 
     WaitForAsyncUtils.waitForFxEvents();
-    verify(mapService).getLadderMaps(100, 1);
+    verify(mapService).getLadderMaps(50, 1);
   }
 
 }

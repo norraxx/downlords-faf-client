@@ -58,8 +58,7 @@ public class MapVaultController extends AbstractViewController<Node> {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final int TOP_ELEMENT_COUNT = 7;
-  private static final int LOAD_MORE_COUNT = 100;
-  private static final int MAX_SEARCH_RESULTS = 100;
+  private static final int LOAD_MORE_COUNT = 50;
   /**
    * How many mod cards should be badged into one UI thread runnable.
    */
@@ -144,7 +143,7 @@ public class MapVaultController extends AbstractViewController<Node> {
   private void searchByQuery(SearchConfig searchConfig) {
     SearchConfig newSearchConfig = new SearchConfig(searchConfig.getSortConfig(), searchConfig.getSearchQuery() + ";latestVersion.hidden==\"false\"");
     enterLoadingState();
-    displayMapsFromSupplier(() -> mapService.findByQuery(newSearchConfig, ++currentPage, MAX_SEARCH_RESULTS));
+    displayMapsFromSupplier(() -> mapService.findByQuery(newSearchConfig, ++currentPage, LOAD_MORE_COUNT));
   }
 
   @Override
@@ -170,10 +169,8 @@ public class MapVaultController extends AbstractViewController<Node> {
         })
         .thenAccept(mapBeans -> {
           if (mapBeans.isEmpty()) {
-            ownedPane.setVisible(false);
-            ownedMoreButton.setVisible(false);
-            ownedMoreLabel.setVisible(false);
-          }
+            hideOwned();
+      	  }
           replaceSearchResult(mapBeans, ownedPane);
         })
         .thenRun(this::enterShowroomState)
@@ -183,39 +180,49 @@ public class MapVaultController extends AbstractViewController<Node> {
         });
   }
 
-  private void replaceSearchResult(List<MapBean> maps, Pane pane) {
-    Platform.runLater(() -> pane.getChildren().clear());
-    appendSearchResult(maps, pane);
+  private void hideOwned() {
+    Platform.runLater(() -> {
+      ownedPane.setVisible(false);
+      ownedMoreButton.setVisible(false);
+      ownedMoreLabel.setVisible(false);
+    });
   }
 
   private void enterLoadingState() {
-    state.set(State.LOADING);
-    showroomGroup.setVisible(false);
-    searchResultGroup.setVisible(false);
-    loadingLabel.setVisible(true);
-    backButton.setVisible(true);
-    moreButton.setVisible(false);
+    Platform.runLater(() -> {
+      state.set(State.LOADING);
+      showroomGroup.setVisible(false);
+      searchResultGroup.setVisible(false);
+      loadingLabel.setVisible(true);
+      backButton.setVisible(true);
+      moreButton.setVisible(false);
+    });
   }
 
   private void enterSearchResultState() {
-    state.set(State.SEARCH_RESULT);
-    showroomGroup.setVisible(false);
-    searchResultGroup.setVisible(true);
-    loadingLabel.setVisible(false);
-    backButton.setVisible(true);
-    moreButton.setVisible(searchResultPane.getChildren().size() % MAX_SEARCH_RESULTS == 0);
+    Platform.runLater(() -> {
+      state.set(State.SEARCH_RESULT);
+      showroomGroup.setVisible(false);
+      searchResultGroup.setVisible(true);
+      loadingLabel.setVisible(false);
+      backButton.setVisible(true);
+      moreButton.setVisible(searchResultPane.getChildren().size() >= LOAD_MORE_COUNT);
+    });
   }
 
   private void enterShowroomState() {
-    state.set(State.SHOWROOM);
-    showroomGroup.setVisible(true);
-    searchResultGroup.setVisible(false);
-    loadingLabel.setVisible(false);
-    backButton.setVisible(false);
-    moreButton.setVisible(false);
+    Platform.runLater(() -> {
+      state.set(State.SHOWROOM);
+      showroomGroup.setVisible(true);
+      searchResultGroup.setVisible(false);
+      loadingLabel.setVisible(false);
+      backButton.setVisible(false);
+      moreButton.setVisible(false);
+    });
   }
 
   private void onShowMapDetail(MapBean map) {
+    JavaFxUtil.assertApplicationThread();
     mapDetailController.setMap(map);
     mapDetailController.getRoot().setVisible(true);
     mapDetailController.getRoot().requestFocus();
@@ -249,6 +256,7 @@ public class MapVaultController extends AbstractViewController<Node> {
   }
 
   public void onRefreshButtonClicked() {
+    JavaFxUtil.assertBackgroundThread();
     mapService.evictCache();
     switch (state.get()) {
       case SHOWROOM:
@@ -313,9 +321,12 @@ public class MapVaultController extends AbstractViewController<Node> {
     displayMapsFromSupplier(() -> mapService.getOwnedMaps(currentPlayer.getId(), LOAD_MORE_COUNT, ++currentPage));
   }
 
-  private void appendSearchResult(List<MapBean> maps, Pane pane) {
+  private void replaceSearchResult(List<MapBean> maps, Pane pane) {
     JavaFxUtil.assertBackgroundThread();
 
+    Platform.runLater(() -> {
+      pane.getChildren().clear();
+    });
     ObservableList<Node> children = pane.getChildren();
     List<MapCardController> controllers = maps.parallelStream()
         .map(map -> {
@@ -325,6 +336,7 @@ public class MapVaultController extends AbstractViewController<Node> {
           return controller;
         }).collect(Collectors.toList());
 
+    // this needs to run in background thread so that ui thread can be updated in batches
     Iterators.partition(controllers.iterator(), BATCH_SIZE).forEachRemaining(mapCardControllers -> Platform.runLater(() -> {
       for (MapCardController mapCardController : mapCardControllers) {
         children.add(mapCardController.getRoot());
@@ -351,9 +363,8 @@ public class MapVaultController extends AbstractViewController<Node> {
   }
 
   private void displayMaps(List<MapBean> maps) {
-    Platform.runLater(() -> searchResultPane.getChildren().clear());
-    appendSearchResult(maps, searchResultPane);
-    Platform.runLater(this::enterSearchResultState);
+    replaceSearchResult(maps, searchResultPane);
+    enterSearchResultState();
   }
 
   public void onLoadMoreButtonClicked() {
@@ -362,7 +373,7 @@ public class MapVaultController extends AbstractViewController<Node> {
 
     currentSupplier.get()
         .thenAccept(maps -> {
-          appendSearchResult(maps, searchResultPane);
+          replaceSearchResult(maps, searchResultPane);
           enterSearchResultState();
         })
         .exceptionally(throwable -> {

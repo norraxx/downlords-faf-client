@@ -58,7 +58,7 @@ public class MapVaultController extends AbstractViewController<Node> {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final int TOP_ELEMENT_COUNT = 7;
-  private static final int LOAD_MORE_COUNT = 50;
+  private static final int LOAD_PER_PAGE = 50;
   /**
    * How many mod cards should be badged into one UI thread runnable.
    */
@@ -143,7 +143,7 @@ public class MapVaultController extends AbstractViewController<Node> {
   private void searchByQuery(SearchConfig searchConfig) {
     SearchConfig newSearchConfig = new SearchConfig(searchConfig.getSortConfig(), searchConfig.getSearchQuery() + ";latestVersion.hidden==\"false\"");
     enterLoadingState();
-    displayMapsFromSupplier(() -> mapService.findByQuery(newSearchConfig, ++currentPage, LOAD_MORE_COUNT));
+    displayMapsFromSupplier(() -> mapService.findByQuery(newSearchConfig, ++currentPage, LOAD_PER_PAGE));
   }
 
   @Override
@@ -206,7 +206,7 @@ public class MapVaultController extends AbstractViewController<Node> {
       searchResultGroup.setVisible(true);
       loadingLabel.setVisible(false);
       backButton.setVisible(true);
-      moreButton.setVisible(searchResultPane.getChildren().size() >= LOAD_MORE_COUNT);
+      moreButton.setVisible(searchResultPane.getChildren().size() >= LOAD_PER_PAGE);
     });
   }
 
@@ -256,7 +256,6 @@ public class MapVaultController extends AbstractViewController<Node> {
   }
 
   public void onRefreshButtonClicked() {
-    JavaFxUtil.assertBackgroundThread();
     mapService.evictCache();
     switch (state.get()) {
       case SHOWROOM:
@@ -291,43 +290,37 @@ public class MapVaultController extends AbstractViewController<Node> {
 
   public void showMoreRecommendedMaps() {
     enterLoadingState();
-    displayMapsFromSupplier(() -> mapService.getRecommendedMaps(LOAD_MORE_COUNT, ++currentPage));
+    displayMapsFromSupplier(() -> mapService.getRecommendedMaps(LOAD_PER_PAGE, ++currentPage));
   }
 
   public void showMoreHighestRatedMaps() {
     enterLoadingState();
-    displayMapsFromSupplier(() -> mapService.getHighestRatedMaps(LOAD_MORE_COUNT, ++currentPage));
+    displayMapsFromSupplier(() -> mapService.getHighestRatedMaps(LOAD_PER_PAGE, ++currentPage));
   }
 
   public void showMoreMostRecentMaps() {
     enterLoadingState();
-    displayMapsFromSupplier(() -> mapService.getNewestMaps(LOAD_MORE_COUNT, ++currentPage));
+    displayMapsFromSupplier(() -> mapService.getNewestMaps(LOAD_PER_PAGE, ++currentPage));
   }
 
   public void showMoreMostPlayedMaps() {
     enterLoadingState();
-    displayMapsFromSupplier(() -> mapService.getMostPlayedMaps(LOAD_MORE_COUNT, ++currentPage));
+    displayMapsFromSupplier(() -> mapService.getMostPlayedMaps(LOAD_PER_PAGE, ++currentPage));
   }
 
   public void showMoreLadderdMaps() {
     enterLoadingState();
-    displayMapsFromSupplier(() -> mapService.getLadderMaps(LOAD_MORE_COUNT, ++currentPage));
+    displayMapsFromSupplier(() -> mapService.getLadderMaps(LOAD_PER_PAGE, ++currentPage));
   }
 
   public void showMoreOwnedMaps() {
     enterLoadingState();
     Player currentPlayer = playerService.getCurrentPlayer()
         .orElseThrow(() -> new IllegalStateException("Current player was null"));
-    displayMapsFromSupplier(() -> mapService.getOwnedMaps(currentPlayer.getId(), LOAD_MORE_COUNT, ++currentPage));
+    displayMapsFromSupplier(() -> mapService.getOwnedMaps(currentPlayer.getId(), LOAD_PER_PAGE, ++currentPage));
   }
 
   private void replaceSearchResult(List<MapBean> maps, Pane pane) {
-    JavaFxUtil.assertBackgroundThread();
-
-    Platform.runLater(() -> {
-      pane.getChildren().clear();
-    });
-    ObservableList<Node> children = pane.getChildren();
     List<MapCardController> controllers = maps.parallelStream()
         .map(map -> {
           MapCardController controller = uiService.loadFxml("theme/vault/map/map_card.fxml");
@@ -336,10 +329,14 @@ public class MapVaultController extends AbstractViewController<Node> {
           return controller;
         }).collect(Collectors.toList());
 
+    Platform.runLater(() -> {
+      pane.getChildren().clear();
+    });
     // this needs to run in background thread so that ui thread can be updated in batches
+    JavaFxUtil.assertBackgroundThread();
     Iterators.partition(controllers.iterator(), BATCH_SIZE).forEachRemaining(mapCardControllers -> Platform.runLater(() -> {
       for (MapCardController mapCardController : mapCardControllers) {
-        children.add(mapCardController.getRoot());
+        pane.getChildren().add(mapCardController.getRoot());
       }
     }));
   }

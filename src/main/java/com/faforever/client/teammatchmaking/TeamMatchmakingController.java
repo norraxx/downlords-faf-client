@@ -101,7 +101,7 @@ public class TeamMatchmakingController extends AbstractViewController<Node> {
         teamMatchmakingService.getParty().ownerProperty(),
         playerService.currentPlayerProperty()
     ));
-    leavePartyButton.visibleProperty().bind(createBooleanBinding(() -> teamMatchmakingService.getParty().getMembers().size() >= 2, teamMatchmakingService.getParty().getMembers()));
+    leavePartyButton.disableProperty().bind(createBooleanBinding(() -> teamMatchmakingService.getParty().getMembers().size() <= 1, teamMatchmakingService.getParty().getMembers()));
   }
 
   @Override
